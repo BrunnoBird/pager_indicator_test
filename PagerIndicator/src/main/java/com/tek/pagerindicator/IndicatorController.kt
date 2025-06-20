@@ -99,20 +99,7 @@ internal class IndicatorController(
     private fun sizeFinder(index: Int): Float {
         return when (index) {
             selectedIndex.value -> dotStyle.currentDotRadius
-            visibleRange.first -> {
-                if (visibleRange.first != 0)
-                    dotStyle.notLastDotRadius
-                else
-                    dotStyle.regularDotRadius
-            }
-            visibleRange.last -> {
-                if (visibleRange.last != count - 1)
-                    dotStyle.notLastDotRadius
-                else
-                    dotStyle.regularDotRadius
-            }
             in visibleRange -> dotStyle.regularDotRadius
-
             else -> 0f
         }
     }
