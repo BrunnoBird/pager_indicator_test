@@ -44,6 +44,17 @@ PagerIndicator(
   orientation = Orientation.Vertical
  )
 ```
+Or you can update the indicator manually by providing the current page index and page count:
+```kotlin
+PagerIndicator(
+  modifier = Modifier,
+  pageCount = pageCount,
+  currentIndex = currentPage,
+  dotStyle = DotStyle.defaultDotStyle,
+  dotAnimation = DotAnimation.defaultDotAnimation,
+  orientation = Orientation.Vertical
+ )
+```
 # Customization
 
 | Attribute           | Note                                      | Default     |
