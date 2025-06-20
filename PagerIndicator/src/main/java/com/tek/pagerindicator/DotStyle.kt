@@ -27,7 +27,7 @@ data class DotStyle(
         private val defaultRegularRadius = 4.dp
         private val defaultDotNotLastRadius = 2.dp
         private val defaultCurrentDotRadius = 8.dp
-        private val defaultDotMargin = defaultRegularRadius * 3f
+        private val defaultDotMargin = 4.dp
         private val defaultCurrentDotColor = Color(0xFF0d6efd)
         private val defaultRegularDotColor = Color(0xFF6c757d)
         val defaultDotStyle = DotStyle(
