@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.center
 import com.tek.pagerindicator.DotStylePx
+import com.tek.pagerindicator.RANGE_STEP
 
 // internal representation of DotStyle in pixels
 
@@ -136,11 +137,13 @@ internal class IndicatorController(
     }
 
     override fun processRangeNext() {
-        visibleRange = visibleRange.first.plus(1)..visibleRange.last.plus(1)
+        val step = minOf(RANGE_STEP, count - 1 - visibleRange.last)
+        visibleRange = visibleRange.first + step..visibleRange.last + step
     }
 
     override fun processRangePrev() {
-        visibleRange = visibleRange.first.minus(1)..visibleRange.last.minus(1)
+        val step = minOf(RANGE_STEP, visibleRange.first)
+        visibleRange = visibleRange.first - step..visibleRange.last - step
 
     }
 
