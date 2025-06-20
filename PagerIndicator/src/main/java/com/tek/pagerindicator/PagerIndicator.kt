@@ -104,6 +104,12 @@ internal fun PagerIndicatorKernel(
                 dotAnimation.colorAnim
             )
         )
+        indicatorController.alphas.add(
+            animateFloatAsState(
+                targetValue = indicatorController.alphaTargets[i],
+                dotAnimation.alphaAnim
+            )
+        )
     }
 
 
@@ -118,7 +124,8 @@ internal fun PagerIndicatorKernel(
                 color = indicatorController.colors[i].value,
                 topLeft = topLeft,
                 size = Size(width, height),
-                cornerRadius = CornerRadius(dotStyle.regularDotRadius)
+                cornerRadius = CornerRadius(dotStyle.regularDotRadius),
+                alpha = indicatorController.alphas[i].value
             )
         }
     })
