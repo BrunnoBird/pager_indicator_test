@@ -34,6 +34,9 @@ internal class IndicatorController(
     internal val offsetTargets = SnapshotStateList<Offset>()
     internal val offSets = mutableListOf<State<Offset>>()
 
+    internal val alphaTargets = SnapshotStateList<Float>()
+    internal val alphas = mutableListOf<State<Float>>()
+
     private var visibleRange = startRange
 
     init {
@@ -42,6 +45,7 @@ internal class IndicatorController(
             colorTargets.add(colorFinder(i))
             sizeTargets.add(sizeFinder(i))
             offsetTargets.add(Offset.Zero)
+            alphaTargets.add(alphaFinder(i))
         }
         computeOffsets()
     }
@@ -50,6 +54,7 @@ internal class IndicatorController(
         sizes.clear()
         offSets.clear()
         colors.clear()
+        alphas.clear()
     }
 
     fun pageChanged(index: Int) {
@@ -71,6 +76,7 @@ internal class IndicatorController(
         for (i in 0 until count) {
             sizeTargets[i] = sizeFinder(i)
             colorTargets[i] = colorFinder(i)
+            alphaTargets[i] = alphaFinder(i)
         }
         computeOffsets()
     }
@@ -83,6 +89,7 @@ internal class IndicatorController(
         for (i in 0 until count) {
             sizeTargets[i] = sizeFinder(i)
             colorTargets[i] = colorFinder(i)
+            alphaTargets[i] = alphaFinder(i)
         }
         computeOffsets()
 
@@ -103,6 +110,10 @@ internal class IndicatorController(
             in visibleRange -> dotStyle.regularDotRadius
             else -> 0f
         }
+    }
+
+    private fun alphaFinder(index: Int): Float {
+        return if (index in visibleRange) 1f else 0f
     }
 
     private fun widthForRange(radii: FloatArray, range: IntRange): Float {
@@ -133,6 +144,7 @@ internal class IndicatorController(
         for (i in 0 until count) {
             val off = Offset(centers[i], size.center.y.toFloat())
             if (offsetTargets.size > i) offsetTargets[i] = off else offsetTargets.add(off)
+            if (alphaTargets.size <= i) alphaTargets.add(alphaFinder(i)) else alphaTargets[i] = alphaFinder(i)
         }
     }
 

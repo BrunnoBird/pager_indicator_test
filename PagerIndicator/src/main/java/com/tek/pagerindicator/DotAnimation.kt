@@ -11,7 +11,8 @@ import androidx.compose.ui.graphics.Color
 data class DotAnimation(
     val sizeAnim: AnimationSpec<Float>,
     val offsetAnim: AnimationSpec<Offset>,
-    val colorAnim: AnimationSpec<Color>
+    val colorAnim: AnimationSpec<Color>,
+    val alphaAnim: AnimationSpec<Float>
 ) {
     companion object {
         val defaultDotAnimation = DotAnimation(
@@ -23,7 +24,11 @@ data class DotAnimation(
                 durationMillis = 1000,
                 easing = FastOutSlowInEasing
             ),
-            spring()
+            spring(),
+            tween<Float>(
+                durationMillis = 1000,
+                easing = LinearEasing
+            )
         )
     }
 }
