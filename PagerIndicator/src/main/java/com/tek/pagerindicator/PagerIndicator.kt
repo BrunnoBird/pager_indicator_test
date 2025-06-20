@@ -9,6 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntSize
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -101,10 +104,16 @@ internal fun PagerIndicatorKernel(
 
     Canvas(modifier = Modifier.fillMaxSize(), onDraw = {
         for (i in 0 until pageCount) {
-            drawCircle(
-                indicatorController.colors[i].value,
-                radius = indicatorController.sizes[i].value,
-                center = indicatorController.offSets[i].value
+            val width = indicatorController.sizes[i].value * 2
+            val height = dotStyle.regularDotRadius * 2
+            val topLeft = indicatorController.offSets[i].value -
+                Offset(width / 2f, height / 2f)
+
+            drawRoundRect(
+                color = indicatorController.colors[i].value,
+                topLeft = topLeft,
+                size = Size(width, height),
+                cornerRadius = CornerRadius(dotStyle.regularDotRadius)
             )
         }
     })
