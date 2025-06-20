@@ -14,6 +14,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntSize
+import com.tek.pagerindicator.RANGE_STEP
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
 
@@ -48,15 +49,17 @@ internal fun PagerIndicatorKernel(
 
     fun updateRange(index: Int) {
         if (index == range.endIndex && index != pageCount - 1) {
+            val step = kotlin.math.min(RANGE_STEP, pageCount - 1 - range.endIndex)
             range = RangeChanged(
-                startIndex = range.startIndex + 1,
-                endIndex = range.endIndex + 1
+                startIndex = range.startIndex + step,
+                endIndex = range.endIndex + step
             )
 
         } else if (index == range.startIndex && index != 0) {
+            val step = kotlin.math.min(RANGE_STEP, range.startIndex)
             range = RangeChanged(
-                startIndex = range.startIndex - 1,
-                endIndex = range.endIndex - 1
+                startIndex = range.startIndex - step,
+                endIndex = range.endIndex - step
             )
         }
 
