@@ -26,7 +26,7 @@ data class DotAnimation(
             ),
             spring(),
             tween<Float>(
-                durationMillis = 300,
+                durationMillis = 1000,
                 easing = LinearEasing
             )
         )
