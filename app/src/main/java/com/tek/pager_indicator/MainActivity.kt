@@ -4,23 +4,25 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.material.Button
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.Button
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.tek.pagerindicator.DotStyle
-import com.tek.pagerindicator.PagerIndicator
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.tek.pagerindicator.PagerIndicator
 
 
 class MainActivity : ComponentActivity() {
@@ -30,7 +32,7 @@ class MainActivity : ComponentActivity() {
             Surface(modifier = Modifier.fillMaxSize()) {
                 Column(Modifier.fillMaxSize()) {
                     Column(modifier = Modifier.weight(1f)) {
-                        VerticalPagerIndicator()
+                        PagerIndicatorContent()
                     }
                 }
             }
@@ -39,39 +41,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun HorizontalPagerIndicator() {
-    var currentIndex by remember { mutableStateOf(0) }
-    val pageCount = 7
-
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        PagerIndicator(
-            modifier = Modifier
-                .background(Color.Yellow),
-            pageCount = pageCount,
-            currentIndex = currentIndex
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row {
-            Button(onClick = { if (currentIndex > 0) currentIndex-- }) {
-                Text("Prev")
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-            Button(onClick = { if (currentIndex < pageCount - 1) currentIndex++ }) {
-                Text("Next")
-            }
-        }
-    }
-
-}
-
-@Composable
-fun VerticalPagerIndicator() {
+fun PagerIndicatorContent() {
     var currentIndex by remember { mutableStateOf(0) }
     val pageCount = 11
 
