@@ -3,10 +3,10 @@ package com.tek.pagerindicator
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -84,7 +84,7 @@ internal fun PagerIndicatorKernel(
     val space = with(LocalDensity.current) { dotStyle.dotMargin.toDp() }
 
     if (orientation == Orientation.Vertical) {
-        Row(horizontalArrangement = Arrangement.spacedBy(space)) {
+        Row {
             for (i in range.startIndex..range.endIndex) {
                 val targetRadius = sizeForIndex(i)
                 val sizeAnim = animateDpAsState(
@@ -97,6 +97,7 @@ internal fun PagerIndicatorKernel(
                 )
                 Box(
                     modifier = Modifier
+                        .padding(end = if (i != range.endIndex) space else 0.dp)
                         .size(sizeAnim.value)
                         .clip(CircleShape)
                         .background(colorAnim.value)
@@ -104,7 +105,7 @@ internal fun PagerIndicatorKernel(
             }
         }
     } else {
-        Column(verticalArrangement = Arrangement.spacedBy(space)) {
+        Column {
             for (i in range.startIndex..range.endIndex) {
                 val targetRadius = sizeForIndex(i)
                 val sizeAnim = animateDpAsState(
@@ -117,6 +118,7 @@ internal fun PagerIndicatorKernel(
                 )
                 Box(
                     modifier = Modifier
+                        .padding(bottom = if (i != range.endIndex) space else 0.dp)
                         .size(sizeAnim.value)
                         .clip(CircleShape)
                         .background(colorAnim.value)
