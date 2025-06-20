@@ -63,7 +63,7 @@ PagerIndicator(
 | currentDotRadius    | Current dot radius                        | 8.dp      |
 | notLastDotRadius    | Not last edge dot radius                  | 2.dp      |
 | regularDotRadius    | Regular dot radius                        | 4.dp      |
-| dotMargin           | Space between dots                        | 12.dp     |
+| dotMargin           | Space between dots                        | 4.dp      |
 | visibleDotCount     | Max visible dot count                     | 5           |
 | currentDotColor     | Current dot color                         | #0d6efd     |
 | regularDotColor     | Regular dot color                         | #6c757d     |

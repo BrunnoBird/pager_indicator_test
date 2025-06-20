@@ -35,8 +35,6 @@ internal class IndicatorController(
     internal val offsetTargets = SnapshotStateList<Offset>()
     internal val offSets = mutableListOf<State<Offset>>()
 
-    private var offsetEach = dotStyle.dotMargin + dotStyle.regularDotRadius.times(2)
-
     private var visibleRange = startRange
 
     init {
@@ -44,26 +42,9 @@ internal class IndicatorController(
         for (i in 0 until count) {
             colorTargets.add(colorFinder(i))
             sizeTargets.add(sizeFinder(i))
-
-            offsetTargets.add(
-                when (orientation) {
-                    Orientation.Vertical -> Offset(
-                        x = calculateStartOffset() + i.times(dotStyle.dotMargin) + i.times(
-                            dotStyle.regularDotRadius.times(2)
-                        ) - ((startRange.first) * offsetEach),
-                        y = size.center.y.toFloat()
-                    )
-                    else -> Offset(
-                        y = calculateStartOffset() + i.times(dotStyle.dotMargin) + i.times(
-                            dotStyle.regularDotRadius.times(2)
-                        ) - ((startRange.first) * offsetEach),
-                        x = size.center.x.toFloat()
-                    )
-                }
-
-            )
-
+            offsetTargets.add(Offset.Zero)
         }
+        computeOffsets()
     }
 
     fun clearAll() {
@@ -85,52 +66,26 @@ internal class IndicatorController(
 
     private fun next() {
         if (selectedIndex.value + 1 == visibleRange.last && selectedIndex.value + 1 != count - 1) {
-            for (i in 0 until count)
-                offsetTargets[i] = when (orientation) {
-                    Orientation.Vertical -> Offset(
-                        x = offsetTargets[i].x - offsetEach,
-                        y = offsetTargets[i].y
-                    )
-                    else -> Offset(
-                        y = offsetTargets[i].y - offsetEach,
-                        x = offsetTargets[i].x
-                    )
-                }
             processRangeNext()
-            selectedIndex.value++
-            for (i in 0 until count) {
-
-                sizeTargets[i] = sizeFinder(i)
-                colorTargets[i] = colorFinder(i)
-            }
-
-        } else {
-            processMovementForward()
         }
+        selectedIndex.value++
+        for (i in 0 until count) {
+            sizeTargets[i] = sizeFinder(i)
+            colorTargets[i] = colorFinder(i)
+        }
+        computeOffsets()
     }
 
     private fun prev() {
         if (selectedIndex.value - 1 == visibleRange.first && selectedIndex.value - 1 != 0) {
-            for (i in 0 until count)
-                offsetTargets[i] =
-                    when (orientation) {
-                        Orientation.Vertical ->
-                            Offset(x = offsetTargets[i].x + offsetEach, y = offsetTargets[i].y)
-                        else -> Offset(
-                            y = offsetTargets[i].y + offsetEach,
-                            x = offsetTargets[i].x
-                        )
-                    }
             processRangePrev()
-            selectedIndex.value--
-            for (i in 0 until count) {
-                sizeTargets[i] = sizeFinder(i)
-                colorTargets[i] = colorFinder(i)
-            }
-
-        } else {
-            processMovementBackward()
         }
+        selectedIndex.value--
+        for (i in 0 until count) {
+            sizeTargets[i] = sizeFinder(i)
+            colorTargets[i] = colorFinder(i)
+        }
+        computeOffsets()
 
     }
 
@@ -164,17 +119,37 @@ internal class IndicatorController(
         }
     }
 
-    private fun calculateStartOffset(): Float {
-        var totalDotSize = dotStyle.regularDotRadius.times(2f)
+    private fun widthForRange(radii: FloatArray, range: IntRange): Float {
+        var total = radii[range.first] * 2f
+        for (i in range.first + 1..range.last) {
+            total += radii[i] * 2f + dotStyle.dotMargin
+        }
+        return total
+    }
 
-        val till = if (count > dotStyle.visibleDotCount) dotStyle.visibleDotCount else count
-        for (i in 1 until till)
-            totalDotSize += dotStyle.regularDotRadius.times(2f) + dotStyle.dotMargin
+    private fun computeOffsets() {
+        val radii = FloatArray(count) { sizeFinder(it) }
+        val centers = FloatArray(count)
+        val first = visibleRange.first
+        val last = visibleRange.last
 
-        return when (orientation) {
-            Orientation.Vertical -> size.width.div(2f) - totalDotSize.div(2f) + dotStyle.regularDotRadius
-            else -> size.height.div(2f) - totalDotSize.div(2f) + dotStyle.regularDotRadius
+        val total = widthForRange(radii, first..last)
+        val centerCoord = if (orientation == Orientation.Vertical) size.width / 2f else size.height / 2f
+        centers[first] = centerCoord - total / 2f + radii[first]
 
+        for (i in first + 1 until count) {
+            centers[i] = centers[i - 1] + radii[i - 1] + radii[i] + dotStyle.dotMargin
+        }
+        for (i in first - 1 downTo 0) {
+            centers[i] = centers[i + 1] - (radii[i + 1] + radii[i] + dotStyle.dotMargin)
+        }
+
+        for (i in 0 until count) {
+            val off = when (orientation) {
+                Orientation.Vertical -> Offset(centers[i], size.center.y.toFloat())
+                else -> Offset(size.center.x.toFloat(), centers[i])
+            }
+            if (offsetTargets.size > i) offsetTargets[i] = off else offsetTargets.add(off)
         }
     }
 
@@ -193,6 +168,7 @@ internal class IndicatorController(
         selectedIndex.value++
         sizeTargets[selectedIndex.value] = dotStyle.currentDotRadius
         colorTargets[selectedIndex.value] = dotStyle.currentDotColor
+        computeOffsets()
     }
 
     override fun processMovementBackward() {
@@ -201,6 +177,7 @@ internal class IndicatorController(
         selectedIndex.value--
         sizeTargets[selectedIndex.value] = dotStyle.currentDotRadius
         colorTargets[selectedIndex.value] = dotStyle.currentDotColor
+        computeOffsets()
 
     }
 
