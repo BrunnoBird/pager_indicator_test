@@ -19,7 +19,7 @@ import com.google.accompanist.pager.PagerState
 @Composable
 internal fun PagerIndicatorKernel(
     pageCount: Int,
-    pagerState: PagerState,
+    currentIndex: Int,
     intSize: IntSize,
     dotStyle: DotStyle = DotStyle.defaultDotStyle,
     dotAnimation: DotAnimation = DotAnimation.defaultDotAnimation,
@@ -27,11 +27,22 @@ internal fun PagerIndicatorKernel(
 ) {
     //save page on config changes
     var page by rememberSaveable {
-        mutableStateOf(0)
+        mutableStateOf(currentIndex)
     }
     //save displayed range on config changes
     var range by rememberSaveable {
-        mutableStateOf(RangeChanged(0, dotStyle.visibleDotCount - 1))
+        val start = when {
+            pageCount <= dotStyle.visibleDotCount -> 0
+            else -> {
+                val half = dotStyle.visibleDotCount / 2
+                val maxStart = pageCount - dotStyle.visibleDotCount
+                val desired = currentIndex - half
+                kotlin.math.min(kotlin.math.max(desired, 0), maxStart)
+            }
+        }
+        mutableStateOf(
+            RangeChanged(start, kotlin.math.min(start + dotStyle.visibleDotCount - 1, pageCount - 1))
+        )
     }
 
     fun updateRange(index: Int) {
@@ -61,12 +72,10 @@ internal fun PagerIndicatorKernel(
 
         )
 
-    LaunchedEffect(pagerState) {
-        snapshotFlow { pagerState.currentPage }.collect { pageIndex ->
-            indicatorController.pageChanged(pageIndex)
-            page = pageIndex
-            updateRange(pageIndex)
-        }
+    LaunchedEffect(currentIndex) {
+        indicatorController.pageChanged(currentIndex)
+        page = currentIndex
+        updateRange(currentIndex)
     }
 
 
@@ -114,13 +123,32 @@ fun PagerIndicator(
     dotAnimation: DotAnimation = DotAnimation.defaultDotAnimation,
     orientation: Orientation = Orientation.Vertical
 ) {
+    PagerIndicator(
+        modifier = modifier,
+        pageCount = pagerState.pageCount,
+        currentIndex = pagerState.currentPage,
+        dotStyle = dotStyle,
+        dotAnimation = dotAnimation,
+        orientation = orientation
+    )
+}
+
+@Composable
+fun PagerIndicator(
+    modifier: Modifier,
+    pageCount: Int,
+    currentIndex: Int,
+    dotStyle: DotStyle = DotStyle.defaultDotStyle,
+    dotAnimation: DotAnimation = DotAnimation.defaultDotAnimation,
+    orientation: Orientation = Orientation.Vertical
+) {
     BoxWithConstraints(modifier = modifier) {
         val density = LocalDensity.current
         val h = this.maxHeight
         val w = this.maxWidth
         PagerIndicatorKernel(
-            pageCount = pagerState.pageCount,
-            pagerState = pagerState,
+            pageCount = pageCount,
+            currentIndex = currentIndex,
             intSize = with(density) {
                 IntSize(
                     w.toPx().toInt(),
