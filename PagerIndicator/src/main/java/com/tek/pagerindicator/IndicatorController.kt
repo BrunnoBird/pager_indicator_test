@@ -11,11 +11,14 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.center
+import com.tek.pagerindicator.DotStylePx
+
+// internal representation of DotStyle in pixels
 
 internal class IndicatorController(
     private val count: Int,
     private val size: IntSize,
-    private val dotStyle: DotStyle,
+    private val dotStyle: DotStylePx,
     private val orientation: Orientation,
     private val startIndex: Int = 0,
     startRange: IntRange = startIndex..dotStyle.visibleDotCount.minus(1)
@@ -207,7 +210,7 @@ internal class IndicatorController(
 internal fun rememberIndicatorController(
     count: Int,
     size: IntSize,
-    dotStyle: DotStyle,
+    dotStyle: DotStylePx,
     orientation: Orientation,
     startIndex: Int,
     startRange: IntRange

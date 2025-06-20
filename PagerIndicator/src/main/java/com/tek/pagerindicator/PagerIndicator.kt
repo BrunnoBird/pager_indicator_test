@@ -21,7 +21,7 @@ internal fun PagerIndicatorKernel(
     pageCount: Int,
     currentIndex: Int,
     intSize: IntSize,
-    dotStyle: DotStyle = DotStyle.defaultDotStyle,
+    dotStyle: DotStylePx,
     dotAnimation: DotAnimation = DotAnimation.defaultDotAnimation,
     orientation: Orientation = Orientation.Vertical
 ) {
@@ -146,6 +146,7 @@ fun PagerIndicator(
         val density = LocalDensity.current
         val h = this.maxHeight
         val w = this.maxWidth
+        val stylePx = dotStyle.toPx(density)
         PagerIndicatorKernel(
             pageCount = pageCount,
             currentIndex = currentIndex,
@@ -156,7 +157,7 @@ fun PagerIndicator(
                 )
             },
             orientation = orientation,
-            dotStyle = dotStyle,
+            dotStyle = stylePx,
             dotAnimation = dotAnimation
         )
 
