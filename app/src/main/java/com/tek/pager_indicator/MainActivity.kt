@@ -31,13 +31,8 @@ class MainActivity : ComponentActivity() {
             Surface(modifier = Modifier.fillMaxSize()) {
                 Column(Modifier.fillMaxSize()) {
                     Column(modifier = Modifier.weight(1f)) {
-                        HorizontalPagerIndicator()
-                    }
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Column(modifier = Modifier.weight(1f)) {
                         VerticalPagerIndicator()
                     }
-
                 }
             }
         }
@@ -82,24 +77,18 @@ fun VerticalPagerIndicator() {
     var currentIndex by remember { mutableStateOf(0) }
     val pageCount = 11
 
+    PagerIndicator(
+        modifier = Modifier
+            .height(50.dp)
+            .background(Color.LightGray),
+        pageCount = pageCount,
+        currentIndex = currentIndex,
+    )
     Row(
         modifier = Modifier.fillMaxSize(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
-        PagerIndicator(
-            modifier = Modifier.background(Color.Red),
-            pageCount = pageCount,
-            currentIndex = currentIndex,
-            dotStyle = DotStyle.defaultDotStyle.copy(
-                visibleDotCount = 9,
-                currentDotColor = Color.Yellow,
-                regularDotColor = Color.White
-            )
-        )
-
-        Spacer(modifier = Modifier.width(16.dp))
-
         Column {
             Button(onClick = { if (currentIndex > 0) currentIndex-- }) {
                 Text("Prev")
@@ -110,6 +99,5 @@ fun VerticalPagerIndicator() {
             }
         }
     }
-
 }
 
