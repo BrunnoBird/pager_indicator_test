@@ -21,6 +21,8 @@ internal class IndicatorController(
     startRange: IntRange = startIndex..dotStyle.visibleDotCount.minus(1)
 
 ) : IndicatorRangeProcessor, IndicatorMovementProcessor {
+    private val hideDuringScrollCount = dotStyle.hideDuringScrollCount
+    private var isTransitioning = false
     private var selectedIndex = mutableStateOf(startIndex)
 
     internal val colorTargets = SnapshotStateList<Color>()
@@ -199,6 +201,23 @@ internal class IndicatorController(
         sizeTargets[selectedIndex.value] = dotStyle.currentDotRadius
         colorTargets[selectedIndex.value] = dotStyle.currentDotColor
 
+    }
+
+    fun transitionStart() {
+        if (isTransitioning) return
+        isTransitioning = true
+        val hide = hideDuringScrollCount.coerceAtMost(count)
+        for (i in 0 until hide) {
+            sizeTargets[i] = 0f
+        }
+    }
+
+    fun transitionEnd() {
+        if (!isTransitioning) return
+        isTransitioning = false
+        for (i in 0 until count) {
+            sizeTargets[i] = sizeFinder(i)
+        }
     }
 
 }

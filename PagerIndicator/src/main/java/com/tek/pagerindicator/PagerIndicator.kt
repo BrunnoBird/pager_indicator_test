@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntSize
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
@@ -73,9 +74,12 @@ internal fun PagerIndicatorKernel(
         )
 
     LaunchedEffect(currentIndex) {
+        indicatorController.transitionStart()
         indicatorController.pageChanged(currentIndex)
         page = currentIndex
         updateRange(currentIndex)
+        delay(300)
+        indicatorController.transitionEnd()
     }
 
 

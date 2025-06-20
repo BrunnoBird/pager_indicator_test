@@ -9,7 +9,11 @@ data class DotStyle(
     val dotMargin: Float,
     val visibleDotCount: Int,
     val currentDotColor: Color,
-    val regularDotColor: Color
+    val regularDotColor: Color,
+    /**
+     * Number of dots to hide while a page transition is running.
+     */
+    val hideDuringScrollCount: Int = 0
 ) {
     init {
         require(visibleDotCount > 2) { "Visible dot count must be greater than 2" }
@@ -17,6 +21,10 @@ data class DotStyle(
         require(notLastDotRadius > 0f) { "Not last dot radius must be greater than 0F" }
         require(regularDotRadius > 0f) { "Regular dot radius must be greater than 0F" }
         require(dotMargin > 0f) { "Dot margin must be greater than 0F" }
+        require(hideDuringScrollCount >= 0) { "Hide dot count must be >= 0" }
+        require(hideDuringScrollCount <= visibleDotCount) {
+            "Hide dot count must be <= visible dot count"
+        }
     }
 
     companion object {
@@ -34,7 +42,8 @@ data class DotStyle(
             defaultDotMargin,
             defaultVisibleDotCount,
             defaultCurrentDotColor,
-            defaultRegularDotColor
+            defaultRegularDotColor,
+            hideDuringScrollCount = 0
         )
     }
 }
