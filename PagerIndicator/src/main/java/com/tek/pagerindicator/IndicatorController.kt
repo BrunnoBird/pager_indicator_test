@@ -1,7 +1,6 @@
 package com.tek.pagerindicator
 
 import android.util.Log
-import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -19,7 +18,6 @@ internal class IndicatorController(
     private val count: Int,
     private val size: IntSize,
     private val dotStyle: DotStylePx,
-    private val orientation: Orientation,
     private val startIndex: Int = 0,
     startRange: IntRange = startIndex..dotStyle.visibleDotCount.minus(1)
 
@@ -134,7 +132,7 @@ internal class IndicatorController(
         val last = visibleRange.last
 
         val total = widthForRange(radii, first..last)
-        val centerCoord = if (orientation == Orientation.Vertical) size.width / 2f else size.height / 2f
+        val centerCoord = size.width / 2f
         centers[first] = centerCoord - total / 2f + radii[first]
 
         for (i in first + 1 until count) {
@@ -145,10 +143,7 @@ internal class IndicatorController(
         }
 
         for (i in 0 until count) {
-            val off = when (orientation) {
-                Orientation.Vertical -> Offset(centers[i], size.center.y.toFloat())
-                else -> Offset(size.center.x.toFloat(), centers[i])
-            }
+            val off = Offset(centers[i], size.center.y.toFloat())
             if (offsetTargets.size > i) offsetTargets[i] = off else offsetTargets.add(off)
         }
     }
@@ -188,11 +183,10 @@ internal fun rememberIndicatorController(
     count: Int,
     size: IntSize,
     dotStyle: DotStylePx,
-    orientation: Orientation,
     startIndex: Int,
     startRange: IntRange
 ): IndicatorController {
     return remember {
-        IndicatorController(count, size, dotStyle, orientation, startIndex, startRange)
+        IndicatorController(count, size, dotStyle, startIndex, startRange)
     }
 }

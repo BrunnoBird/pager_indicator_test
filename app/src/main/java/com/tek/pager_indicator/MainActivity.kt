@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -53,8 +52,7 @@ fun HorizontalPagerIndicator() {
             modifier = Modifier
                 .background(Color.Yellow),
             pageCount = pageCount,
-            currentIndex = currentIndex,
-            orientation = Orientation.Horizontal
+            currentIndex = currentIndex
         )
 
         Spacer(modifier = Modifier.height(16.dp))

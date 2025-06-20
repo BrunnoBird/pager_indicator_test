@@ -4,7 +4,6 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateOffsetAsState
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
@@ -22,8 +21,7 @@ internal fun PagerIndicatorKernel(
     currentIndex: Int,
     intSize: IntSize,
     dotStyle: DotStylePx,
-    dotAnimation: DotAnimation = DotAnimation.defaultDotAnimation,
-    orientation: Orientation = Orientation.Vertical
+    dotAnimation: DotAnimation = DotAnimation.defaultDotAnimation
 ) {
     //save page on config changes
     var page by rememberSaveable {
@@ -66,7 +64,6 @@ internal fun PagerIndicatorKernel(
             count = pageCount,
             size = intSize,
             dotStyle = dotStyle,
-            orientation = orientation,
             startIndex = page,
             startRange = range.startIndex..range.endIndex
 
@@ -120,16 +117,14 @@ fun PagerIndicator(
     modifier: Modifier,
     pagerState: PagerState,
     dotStyle: DotStyle = DotStyle.defaultDotStyle,
-    dotAnimation: DotAnimation = DotAnimation.defaultDotAnimation,
-    orientation: Orientation = Orientation.Vertical
+    dotAnimation: DotAnimation = DotAnimation.defaultDotAnimation
 ) {
     PagerIndicator(
         modifier = modifier,
         pageCount = pagerState.pageCount,
         currentIndex = pagerState.currentPage,
         dotStyle = dotStyle,
-        dotAnimation = dotAnimation,
-        orientation = orientation
+        dotAnimation = dotAnimation
     )
 }
 
@@ -139,8 +134,7 @@ fun PagerIndicator(
     pageCount: Int,
     currentIndex: Int,
     dotStyle: DotStyle = DotStyle.defaultDotStyle,
-    dotAnimation: DotAnimation = DotAnimation.defaultDotAnimation,
-    orientation: Orientation = Orientation.Vertical
+    dotAnimation: DotAnimation = DotAnimation.defaultDotAnimation
 ) {
     BoxWithConstraints(modifier = modifier) {
         val density = LocalDensity.current
@@ -156,7 +150,6 @@ fun PagerIndicator(
                     h.toPx().toInt()
                 )
             },
-            orientation = orientation,
             dotStyle = stylePx,
             dotAnimation = dotAnimation
         )

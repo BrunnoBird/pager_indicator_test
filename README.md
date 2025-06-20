@@ -40,9 +40,8 @@ PagerIndicator(
   modifier = Modifier,
   pagerState = pagerState,
   dotStyle = DotStyle.defaultDotStyle,
-  dotAnimation = DotAnimation.defaultDotAnimation,
-  orientation = Orientation.Vertical
- )
+  dotAnimation = DotAnimation.defaultDotAnimation
+)
 ```
 Or you can update the indicator manually by providing the current page index and page count:
 ```kotlin
@@ -51,15 +50,13 @@ PagerIndicator(
   pageCount = pageCount,
   currentIndex = currentPage,
   dotStyle = DotStyle.defaultDotStyle,
-  dotAnimation = DotAnimation.defaultDotAnimation,
-  orientation = Orientation.Vertical
- )
+  dotAnimation = DotAnimation.defaultDotAnimation
+)
 ```
 # Customization
 
 | Attribute           | Note                                      | Default     |
 |---------------------|-------------------------------------------|-------------|
-| orientation         | Indicator Orientation                     | Vertical    |
 | currentDotRadius    | Current dot radius                        | 8.dp      |
 | notLastDotRadius    | Not last edge dot radius                  | 2.dp      |
 | regularDotRadius    | Regular dot radius                        | 4.dp      |
