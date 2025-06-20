@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalPagerApi::class)
-
 package com.tek.pager_indicator
 
 import android.os.Bundle
@@ -10,18 +8,20 @@ import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.Button
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.VerticalPager
-import com.google.accompanist.pager.rememberPagerState
 import com.tek.pagerindicator.DotStyle
 import com.tek.pagerindicator.PagerIndicator
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 
 
 class MainActivity : ComponentActivity() {
@@ -46,71 +46,51 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun HorizontalPagerIndicator() {
-    val pagerState = rememberPagerState()
-    Row(modifier = Modifier.fillMaxSize()) {
-        VerticalPager(
-            modifier = Modifier
-                .weight(9f),
-            count = 7,
-            state = pagerState
-        ) { page ->
-            Text(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        Color(
-                            red = (0..255).random(),
-                            green = (0..255).random(),
-                            blue = (0..255).random()
-                        )
-                    ),
-                text = "Page: $page",
-                textAlign = TextAlign.Center,
-                fontSize = 32.sp
-            )
-        }
+    var currentIndex by remember { mutableStateOf(0) }
+    val pageCount = 7
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
         PagerIndicator(
             modifier = Modifier
-                .weight(1f)
                 .background(Color.Yellow),
-            pagerState = pagerState,
+            pageCount = pageCount,
+            currentIndex = currentIndex,
             orientation = Orientation.Horizontal
         )
 
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Row {
+            Button(onClick = { if (currentIndex > 0) currentIndex-- }) {
+                Text("Prev")
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Button(onClick = { if (currentIndex < pageCount - 1) currentIndex++ }) {
+                Text("Next")
+            }
+        }
     }
 
 }
 
 @Composable
 fun VerticalPagerIndicator() {
-    val pagerState = rememberPagerState()
-    Column(modifier = Modifier.fillMaxSize()) {
-        HorizontalPager(
-            modifier = Modifier
-                .weight(9f),
-            count = 11,
-            state = pagerState
-        ) { page ->
-            Text(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        Color(
-                            red = (0..255).random(),
-                            green = (0..255).random(),
-                            blue = (0..255).random()
-                        )
-                    ),
-                text = "Page: $page",
-                textAlign = TextAlign.Center,
-                fontSize = 32.sp
-            )
-        }
+    var currentIndex by remember { mutableStateOf(0) }
+    val pageCount = 11
+
+    Row(
+        modifier = Modifier.fillMaxSize(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
         PagerIndicator(
-            modifier = Modifier
-                .weight(1f)
-                .background(Color.Red),
-            pagerState = pagerState,
+            modifier = Modifier.background(Color.Red),
+            pageCount = pageCount,
+            currentIndex = currentIndex,
             dotStyle = DotStyle.defaultDotStyle.copy(
                 visibleDotCount = 9,
                 currentDotColor = Color.Yellow,
@@ -118,7 +98,17 @@ fun VerticalPagerIndicator() {
             )
         )
 
+        Spacer(modifier = Modifier.width(16.dp))
 
+        Column {
+            Button(onClick = { if (currentIndex > 0) currentIndex-- }) {
+                Text("Prev")
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(onClick = { if (currentIndex < pageCount - 1) currentIndex++ }) {
+                Text("Next")
+            }
+        }
     }
 
 }
