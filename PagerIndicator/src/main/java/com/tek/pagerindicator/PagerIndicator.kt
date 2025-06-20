@@ -6,17 +6,19 @@ import androidx.compose.animation.core.animateOffsetAsState
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntSize
-import com.tek.pagerindicator.RANGE_STEP
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.PagerState
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
@@ -120,24 +122,6 @@ internal fun PagerIndicatorKernel(
             )
         }
     })
-}
-
-
-@OptIn(ExperimentalPagerApi::class)
-@Composable
-fun PagerIndicator(
-    modifier: Modifier,
-    pagerState: PagerState,
-    dotStyle: DotStyle = DotStyle.defaultDotStyle,
-    dotAnimation: DotAnimation = DotAnimation.defaultDotAnimation
-) {
-    PagerIndicator(
-        modifier = modifier,
-        pageCount = pagerState.pageCount,
-        currentIndex = pagerState.currentPage,
-        dotStyle = dotStyle,
-        dotAnimation = dotAnimation
-    )
 }
 
 @Composable
