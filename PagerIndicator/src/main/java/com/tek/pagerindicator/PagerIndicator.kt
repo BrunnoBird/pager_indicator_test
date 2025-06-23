@@ -4,14 +4,24 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateOffsetAsState
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
@@ -29,11 +39,9 @@ internal fun PagerIndicatorKernel(
     dotStyle: DotStylePx,
     dotAnimation: DotAnimation = DotAnimation.defaultDotAnimation
 ) {
-    //save page on config changes
     var page by rememberSaveable {
         mutableStateOf(currentIndex)
     }
-    //save displayed range on config changes
     var range by rememberSaveable {
         val start = when {
             pageCount <= dotStyle.visibleDotCount -> 0
@@ -45,7 +53,10 @@ internal fun PagerIndicatorKernel(
             }
         }
         mutableStateOf(
-            RangeChanged(start, kotlin.math.min(start + dotStyle.visibleDotCount - 1, pageCount - 1))
+            RangeChanged(
+                start,
+                kotlin.math.min(start + dotStyle.visibleDotCount - 1, pageCount - 1)
+            )
         )
     }
 
@@ -85,6 +96,7 @@ internal fun PagerIndicatorKernel(
 
 
     indicatorController.clearAll()
+
     for (i in 0 until pageCount) {
         indicatorController.sizes.add(
             animateFloatAsState(
@@ -123,7 +135,7 @@ internal fun PagerIndicatorKernel(
                 dotStyle.regularDotRadius * 2
             }
             val topLeft = indicatorController.offSets[i].value -
-                Offset(width / 2f, height / 2f)
+                    Offset(width / 2f, height / 2f)
 
             drawRoundRect(
                 color = indicatorController.colors[i].value,
@@ -142,25 +154,74 @@ fun PagerIndicator(
     pageCount: Int,
     currentIndex: Int,
     dotStyle: DotStyle = DotStyle.defaultDotStyle,
-    dotAnimation: DotAnimation = DotAnimation.defaultDotAnimation
+    dotAnimation: DotAnimation = DotAnimation.defaultDotAnimation,
+    hasArrow: Boolean = true,
+    onIndexChange: (Int) -> Unit = {}
 ) {
-    BoxWithConstraints(modifier = modifier) {
-        val density = LocalDensity.current
-        val h = this.maxHeight
-        val w = this.maxWidth
-        val stylePx = dotStyle.toPx(density)
-        PagerIndicatorKernel(
-            pageCount = pageCount,
-            currentIndex = currentIndex,
-            intSize = with(density) {
-                IntSize(
-                    w.toPx().toInt(),
-                    h.toPx().toInt()
+    if (hasArrow) {
+        Row(
+            modifier = modifier,
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            IconButton(
+                onClick = { if (currentIndex > 0) onIndexChange(currentIndex - 1) },
+                enabled = currentIndex > 0
+            ) {
+                Icon(Icons.Filled.ArrowBack, contentDescription = "Prev")
+            }
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+            ) {
+                BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+                    val density = LocalDensity.current
+                    val h = this.maxHeight
+                    val w = this.maxWidth
+                    val stylePx = dotStyle.toPx(density)
+                    PagerIndicatorKernel(
+                        pageCount = pageCount,
+                        currentIndex = currentIndex,
+                        intSize = with(density) {
+                            IntSize(
+                                w.toPx().toInt(),
+                                h.toPx().toInt()
+                            )
+                        },
+                        dotStyle = stylePx,
+                        dotAnimation = dotAnimation
+                    )
+                }
+            }
+            IconButton(
+                onClick = { if (currentIndex < pageCount - 1) onIndexChange(currentIndex + 1) },
+                enabled = currentIndex < pageCount - 1
+            ) {
+                Icon(
+                    Icons.Filled.ArrowForward,
+                    contentDescription = "Next"
                 )
-            },
-            dotStyle = stylePx,
-            dotAnimation = dotAnimation
-        )
-
+            }
+        }
+    } else {
+        BoxWithConstraints(modifier = modifier) {
+            val density = LocalDensity.current
+            val h = this.maxHeight
+            val w = this.maxWidth
+            val stylePx = dotStyle.toPx(density)
+            PagerIndicatorKernel(
+                pageCount = pageCount,
+                currentIndex = currentIndex,
+                intSize = with(density) {
+                    IntSize(
+                        w.toPx().toInt(),
+                        h.toPx().toInt()
+                    )
+                },
+                dotStyle = stylePx,
+                dotAnimation = dotAnimation
+            )
+        }
     }
 }
