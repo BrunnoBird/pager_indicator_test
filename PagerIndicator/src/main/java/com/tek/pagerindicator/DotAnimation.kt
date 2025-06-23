@@ -8,7 +8,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 
-data class DotAnimation(
+class DotAnimation(
     val sizeAnim: AnimationSpec<Float>,
     val offsetAnim: AnimationSpec<Offset>,
     val colorAnim: AnimationSpec<Color>,
