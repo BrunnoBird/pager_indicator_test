@@ -10,7 +10,11 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.weight
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -24,11 +28,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntSize
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
 import com.google.accompanist.pager.ExperimentalPagerApi
 
 @OptIn(ExperimentalPagerApi::class)
@@ -40,11 +39,9 @@ internal fun PagerIndicatorKernel(
     dotStyle: DotStylePx,
     dotAnimation: DotAnimation = DotAnimation.defaultDotAnimation
 ) {
-    //save page on config changes
     var page by rememberSaveable {
         mutableStateOf(currentIndex)
     }
-    //save displayed range on config changes
     var range by rememberSaveable {
         val start = when {
             pageCount <= dotStyle.visibleDotCount -> 0
@@ -56,7 +53,10 @@ internal fun PagerIndicatorKernel(
             }
         }
         mutableStateOf(
-            RangeChanged(start, kotlin.math.min(start + dotStyle.visibleDotCount - 1, pageCount - 1))
+            RangeChanged(
+                start,
+                kotlin.math.min(start + dotStyle.visibleDotCount - 1, pageCount - 1)
+            )
         )
     }
 
@@ -96,6 +96,7 @@ internal fun PagerIndicatorKernel(
 
 
     indicatorController.clearAll()
+
     for (i in 0 until pageCount) {
         indicatorController.sizes.add(
             animateFloatAsState(
@@ -134,7 +135,7 @@ internal fun PagerIndicatorKernel(
                 dotStyle.regularDotRadius * 2
             }
             val topLeft = indicatorController.offSets[i].value -
-                Offset(width / 2f, height / 2f)
+                    Offset(width / 2f, height / 2f)
 
             drawRoundRect(
                 color = indicatorController.colors[i].value,
@@ -169,7 +170,11 @@ fun PagerIndicator(
             ) {
                 Icon(Icons.Filled.ArrowBack, contentDescription = "Prev")
             }
-            Box(modifier = Modifier.weight(1f).fillMaxHeight()) {
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+            ) {
                 BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
                     val density = LocalDensity.current
                     val h = this.maxHeight
@@ -193,7 +198,10 @@ fun PagerIndicator(
                 onClick = { if (currentIndex < pageCount - 1) onIndexChange(currentIndex + 1) },
                 enabled = currentIndex < pageCount - 1
             ) {
-                Icon(Icons.Filled.ArrowForward, contentDescription = "Next")
+                Icon(
+                    Icons.Filled.ArrowForward,
+                    contentDescription = "Next"
+                )
             }
         }
     } else {
