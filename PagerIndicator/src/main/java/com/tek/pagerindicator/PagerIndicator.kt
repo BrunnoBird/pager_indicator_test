@@ -4,20 +4,31 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateOffsetAsState
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.weight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
 import com.google.accompanist.pager.ExperimentalPagerApi
 
 @OptIn(ExperimentalPagerApi::class)
@@ -142,25 +153,67 @@ fun PagerIndicator(
     pageCount: Int,
     currentIndex: Int,
     dotStyle: DotStyle = DotStyle.defaultDotStyle,
-    dotAnimation: DotAnimation = DotAnimation.defaultDotAnimation
+    dotAnimation: DotAnimation = DotAnimation.defaultDotAnimation,
+    hasArrow: Boolean = true,
+    onIndexChange: (Int) -> Unit = {}
 ) {
-    BoxWithConstraints(modifier = modifier) {
-        val density = LocalDensity.current
-        val h = this.maxHeight
-        val w = this.maxWidth
-        val stylePx = dotStyle.toPx(density)
-        PagerIndicatorKernel(
-            pageCount = pageCount,
-            currentIndex = currentIndex,
-            intSize = with(density) {
-                IntSize(
-                    w.toPx().toInt(),
-                    h.toPx().toInt()
-                )
-            },
-            dotStyle = stylePx,
-            dotAnimation = dotAnimation
-        )
-
+    if (hasArrow) {
+        Row(
+            modifier = modifier,
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            IconButton(
+                onClick = { if (currentIndex > 0) onIndexChange(currentIndex - 1) },
+                enabled = currentIndex > 0
+            ) {
+                Icon(Icons.Filled.ArrowBack, contentDescription = "Prev")
+            }
+            Box(modifier = Modifier.weight(1f).fillMaxHeight()) {
+                BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+                    val density = LocalDensity.current
+                    val h = this.maxHeight
+                    val w = this.maxWidth
+                    val stylePx = dotStyle.toPx(density)
+                    PagerIndicatorKernel(
+                        pageCount = pageCount,
+                        currentIndex = currentIndex,
+                        intSize = with(density) {
+                            IntSize(
+                                w.toPx().toInt(),
+                                h.toPx().toInt()
+                            )
+                        },
+                        dotStyle = stylePx,
+                        dotAnimation = dotAnimation
+                    )
+                }
+            }
+            IconButton(
+                onClick = { if (currentIndex < pageCount - 1) onIndexChange(currentIndex + 1) },
+                enabled = currentIndex < pageCount - 1
+            ) {
+                Icon(Icons.Filled.ArrowForward, contentDescription = "Next")
+            }
+        }
+    } else {
+        BoxWithConstraints(modifier = modifier) {
+            val density = LocalDensity.current
+            val h = this.maxHeight
+            val w = this.maxWidth
+            val stylePx = dotStyle.toPx(density)
+            PagerIndicatorKernel(
+                pageCount = pageCount,
+                currentIndex = currentIndex,
+                intSize = with(density) {
+                    IntSize(
+                        w.toPx().toInt(),
+                        h.toPx().toInt()
+                    )
+                },
+                dotStyle = stylePx,
+                dotAnimation = dotAnimation
+            )
+        }
     }
 }
