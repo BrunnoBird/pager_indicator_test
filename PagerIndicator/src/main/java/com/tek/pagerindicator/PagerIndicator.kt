@@ -115,8 +115,13 @@ internal fun PagerIndicatorKernel(
 
     Canvas(modifier = Modifier.fillMaxSize(), onDraw = {
         for (i in 0 until pageCount) {
-            val width = indicatorController.sizes[i].value * 2
-            val height = dotStyle.regularDotRadius * 2
+            val radius = indicatorController.sizes[i].value
+            val width = radius * 2
+            val height = if (indicatorController.alphas[i].value < 1f) {
+                radius * 2
+            } else {
+                dotStyle.regularDotRadius * 2
+            }
             val topLeft = indicatorController.offSets[i].value -
                 Offset(width / 2f, height / 2f)
 
