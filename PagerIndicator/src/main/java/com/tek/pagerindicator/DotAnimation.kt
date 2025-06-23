@@ -32,3 +32,10 @@ data class DotAnimation(
         )
     }
 }
+
+data class DotAnimationSet(
+    val default: DotAnimation = DotAnimation.defaultDotAnimation,
+    val entering: DotAnimation = default,
+    val leaving: DotAnimation = default,
+    val deselecting: DotAnimation = default
+)
