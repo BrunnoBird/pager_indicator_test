@@ -16,16 +16,16 @@ data class DotAnimation(
 ) {
     companion object {
         val defaultDotAnimation = DotAnimation(
-            tween<Float>(
-                durationMillis = 1000,
+            sizeAnim = tween<Float>(
+                durationMillis = 500,
                 easing = LinearEasing
             ),
-            tween<Offset>(
+            offsetAnim = tween<Offset>(
                 durationMillis = 1000,
                 easing = FastOutSlowInEasing
             ),
-            spring(),
-            tween<Float>(
+            colorAnim = spring(),
+            alphaAnim = tween<Float>(
                 durationMillis = 1000,
                 easing = LinearEasing
             )
