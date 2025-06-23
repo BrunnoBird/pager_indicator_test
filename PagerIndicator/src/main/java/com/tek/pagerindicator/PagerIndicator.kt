@@ -4,12 +4,13 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateOffsetAsState
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
@@ -27,7 +28,9 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.ExperimentalPagerApi
 
 @OptIn(ExperimentalPagerApi::class)
@@ -158,70 +161,50 @@ fun PagerIndicator(
     hasArrow: Boolean = true,
     onIndexChange: (Int) -> Unit = {}
 ) {
-    if (hasArrow) {
-        Row(
-            modifier = modifier,
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
+    val density = LocalDensity.current
+    val stylePx = dotStyle.toPx(density)
+    val height = 24.dp
+    val widthDots = dotStyle.contentWidth()
+    val size = with(density) { IntSize(widthDots.toPx().toInt(), height.toPx().toInt()) }
+
+    Row(
+        modifier = modifier.height(height),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (hasArrow) {
             IconButton(
                 onClick = { if (currentIndex > 0) onIndexChange(currentIndex - 1) },
-                enabled = currentIndex > 0
+                enabled = currentIndex > 0,
+                modifier = Modifier.size(height)
             ) {
                 Icon(Icons.Filled.ArrowBack, contentDescription = "Prev")
             }
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
-            ) {
-                BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-                    val density = LocalDensity.current
-                    val h = this.maxHeight
-                    val w = this.maxWidth
-                    val stylePx = dotStyle.toPx(density)
-                    PagerIndicatorKernel(
-                        pageCount = pageCount,
-                        currentIndex = currentIndex,
-                        intSize = with(density) {
-                            IntSize(
-                                w.toPx().toInt(),
-                                h.toPx().toInt()
-                            )
-                        },
-                        dotStyle = stylePx,
-                        dotAnimation = dotAnimation
-                    )
-                }
-            }
-            IconButton(
-                onClick = { if (currentIndex < pageCount - 1) onIndexChange(currentIndex + 1) },
-                enabled = currentIndex < pageCount - 1
-            ) {
-                Icon(
-                    Icons.Filled.ArrowForward,
-                    contentDescription = "Next"
-                )
-            }
+            Spacer(modifier = Modifier.width(4.dp))
         }
-    } else {
-        BoxWithConstraints(modifier = modifier) {
-            val density = LocalDensity.current
-            val h = this.maxHeight
-            val w = this.maxWidth
-            val stylePx = dotStyle.toPx(density)
+
+        Box(
+            modifier = Modifier
+                .width(widthDots)
+                .height(height)
+        ) {
             PagerIndicatorKernel(
                 pageCount = pageCount,
                 currentIndex = currentIndex,
-                intSize = with(density) {
-                    IntSize(
-                        w.toPx().toInt(),
-                        h.toPx().toInt()
-                    )
-                },
+                intSize = size,
                 dotStyle = stylePx,
                 dotAnimation = dotAnimation
             )
         }
+
+        if (hasArrow) {
+            Spacer(modifier = Modifier.width(4.dp))
+            IconButton(
+                onClick = { if (currentIndex < pageCount - 1) onIndexChange(currentIndex + 1) },
+                enabled = currentIndex < pageCount - 1,
+                modifier = Modifier.size(height)
+            ) {
+                Icon(Icons.Filled.ArrowForward, contentDescription = "Next")
+            }
+        }
     }
-}
+
