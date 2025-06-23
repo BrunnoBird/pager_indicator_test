@@ -68,14 +68,3 @@ internal fun DotStyle.toPx(density: Density): DotStylePx = with(density) {
             regularDotColor = regularDotColor
     )
 }
-
-internal fun DotStylePx.contentWidth(): Float {
-    val dotCount = visibleDotCount
-    if (dotCount <= 0) return 0f
-    val regularDiameter = regularDotRadius * 2
-    val currentDiameter = currentDotRadius * 2
-    val dotsWidth = currentDiameter + regularDiameter * (dotCount - 1)
-    val spacing = dotMargin * (dotCount - 1)
-    return dotsWidth + spacing
-}
-
