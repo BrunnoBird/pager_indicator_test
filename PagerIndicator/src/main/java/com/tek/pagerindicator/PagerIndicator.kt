@@ -157,12 +157,21 @@ internal fun PagerIndicatorKernel(
     Canvas(modifier = Modifier.fillMaxSize(), onDraw = {
         for (i in 0 until pageCount) {
             val radius = indicatorController.sizes[i].value
-            val width = radius * 2
-            val height = if (indicatorController.alphas[i].value < 1f) {
-                radius * 2
+            val diameter = radius * 2
+
+            val width: Float
+            val height: Float
+            val corner = if (radius < dotStyle.regularDotRadius) {
+                // keep the dot circular when radius shrinks below the regular size
+                width = diameter
+                height = diameter
+                radius
             } else {
-                dotStyle.regularDotRadius * 2
+                width = diameter
+                height = dotStyle.regularDotRadius * 2
+                dotStyle.regularDotRadius
             }
+
             val topLeft = indicatorController.offSets[i].value -
                     Offset(width / 2f, height / 2f)
 
@@ -170,7 +179,7 @@ internal fun PagerIndicatorKernel(
                 color = indicatorController.colors[i].value,
                 topLeft = topLeft,
                 size = Size(width, height),
-                cornerRadius = CornerRadius(dotStyle.regularDotRadius),
+                cornerRadius = CornerRadius(corner),
                 alpha = indicatorController.alphas[i].value
             )
         }
