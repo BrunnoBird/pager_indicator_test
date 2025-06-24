@@ -19,7 +19,9 @@ import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -40,7 +42,7 @@ internal fun PagerIndicatorKernel(
     currentIndex: Int,
     intSize: IntSize,
     dotStyle: DotStylePx,
-    dotAnimation: DotAnimation = DotAnimation.defaultDotAnimation
+    dotAnimations: DotAnimationSet = DotAnimationSet()
 ) {
     var page by rememberSaveable {
         mutableStateOf(currentIndex)
@@ -62,6 +64,12 @@ internal fun PagerIndicatorKernel(
             )
         )
     }
+
+    var prevPage by remember { mutableStateOf(currentIndex) }
+    var prevRange by remember { mutableStateOf(range) }
+    val enteringIndices = remember { mutableStateListOf<Int>() }
+    val leavingIndices = remember { mutableStateListOf<Int>() }
+    var deselectedIndex by remember { mutableStateOf<Int?>(null) }
 
     fun updateRange(index: Int) {
         if (index == range.endIndex && index != pageCount - 1) {
@@ -92,37 +100,55 @@ internal fun PagerIndicatorKernel(
         )
 
     LaunchedEffect(currentIndex) {
-        indicatorController.pageChanged(currentIndex)
-        page = currentIndex
+        enteringIndices.clear()
+        leavingIndices.clear()
+        deselectedIndex = if (currentIndex != prevPage) prevPage else null
+
         updateRange(currentIndex)
+        indicatorController.pageChanged(currentIndex)
+
+        val newRange = range.startIndex..range.endIndex
+        val oldRange = prevRange.startIndex..prevRange.endIndex
+        enteringIndices.addAll(newRange.filter { it !in oldRange })
+        leavingIndices.addAll(oldRange.filter { it !in newRange })
+
+        prevPage = currentIndex
+        prevRange = range
+        page = currentIndex
     }
 
 
     indicatorController.clearAll()
 
     for (i in 0 until pageCount) {
+        val anim = when {
+            i in enteringIndices -> dotAnimations.entering
+            i in leavingIndices -> dotAnimations.leaving
+            deselectedIndex == i -> dotAnimations.deselecting
+            else -> dotAnimations.default
+        }
         indicatorController.sizes.add(
             animateFloatAsState(
                 targetValue = indicatorController.sizeTargets[i],
-                dotAnimation.sizeAnim
+                anim.sizeAnim
             )
         )
         indicatorController.offSets.add(
             animateOffsetAsState(
                 targetValue = indicatorController.offsetTargets[i],
-                dotAnimation.offsetAnim
+                anim.offsetAnim
             )
         )
         indicatorController.colors.add(
             animateColorAsState(
                 targetValue = indicatorController.colorTargets[i],
-                dotAnimation.colorAnim
+                anim.colorAnim
             )
         )
         indicatorController.alphas.add(
             animateFloatAsState(
                 targetValue = indicatorController.alphaTargets[i],
-                dotAnimation.alphaAnim
+                anim.alphaAnim
             )
         )
     }
@@ -131,12 +157,21 @@ internal fun PagerIndicatorKernel(
     Canvas(modifier = Modifier.fillMaxSize(), onDraw = {
         for (i in 0 until pageCount) {
             val radius = indicatorController.sizes[i].value
-            val width = radius * 2
-            val height = if (indicatorController.alphas[i].value < 1f) {
-                radius * 2
+            val diameter = radius * 2
+
+            val width: Float
+            val height: Float
+            val corner = if (radius < dotStyle.regularDotRadius) {
+                // keep the dot circular when radius shrinks below the regular size
+                width = diameter
+                height = diameter
+                radius
             } else {
-                dotStyle.regularDotRadius * 2
+                width = diameter
+                height = dotStyle.regularDotRadius * 2
+                dotStyle.regularDotRadius
             }
+
             val topLeft = indicatorController.offSets[i].value -
                     Offset(width / 2f, height / 2f)
 
@@ -144,7 +179,7 @@ internal fun PagerIndicatorKernel(
                 color = indicatorController.colors[i].value,
                 topLeft = topLeft,
                 size = Size(width, height),
-                cornerRadius = CornerRadius(dotStyle.regularDotRadius),
+                cornerRadius = CornerRadius(corner),
                 alpha = indicatorController.alphas[i].value
             )
         }
@@ -157,7 +192,7 @@ fun PagerIndicator(
     pageCount: Int,
     currentIndex: Int,
     dotStyle: DotStyle = DotStyle.defaultDotStyle,
-    dotAnimation: DotAnimation = DotAnimation.defaultDotAnimation,
+    dotAnimations: DotAnimationSet = DotAnimationSet(),
     hasArrow: Boolean = true,
     onIndexChange: (Int) -> Unit = {}
 ) {
@@ -192,7 +227,7 @@ fun PagerIndicator(
                 currentIndex = currentIndex,
                 intSize = size,
                 dotStyle = stylePx,
-                dotAnimation = dotAnimation
+                dotAnimations = dotAnimations
             )
         }
 

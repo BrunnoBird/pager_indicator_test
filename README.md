@@ -40,7 +40,7 @@ PagerIndicator(
   modifier = Modifier,
   pagerState = pagerState,
   dotStyle = DotStyle.defaultDotStyle,
-  dotAnimation = DotAnimation.defaultDotAnimation
+  dotAnimations = DotAnimationSet()
 )
 ```
 Or you can update the indicator manually by providing the current page index and page count:
@@ -50,7 +50,7 @@ PagerIndicator(
   pageCount = pageCount,
   currentIndex = currentPage,
   dotStyle = DotStyle.defaultDotStyle,
-  dotAnimation = DotAnimation.defaultDotAnimation
+  dotAnimations = DotAnimationSet()
 )
 ```
 # Customization
