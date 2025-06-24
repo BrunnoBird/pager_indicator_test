@@ -30,6 +30,18 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalAccessibilityManager
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.collectionInfo
+import androidx.compose.ui.semantics.collectionItemInfo
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.CollectionInfo
+import androidx.compose.ui.semantics.CollectionItemInfo
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.foundation.focusable
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -197,10 +209,17 @@ fun PagerIndicator(
     onIndexChange: (Int) -> Unit = {}
 ) {
     val density = LocalDensity.current
+    val accessibilityManager = LocalAccessibilityManager.current
     val stylePx = dotStyle.toPx(density)
     val height = 24.dp
     val widthDots = dotStyle.contentWidth()
     val size = with(density) { IntSize(widthDots.toPx().toInt(), height.toPx().toInt()) }
+
+    val announcement = "${currentIndex + 1} de $pageCount"
+
+    LaunchedEffect(currentIndex) {
+        accessibilityManager?.sendAnnouncement(announcement)
+    }
 
     Row(
         modifier = modifier.height(height),
@@ -210,9 +229,11 @@ fun PagerIndicator(
             IconButton(
                 onClick = { if (currentIndex > 0) onIndexChange(currentIndex - 1) },
                 enabled = currentIndex > 0,
-                modifier = Modifier.size(height)
+                modifier = Modifier
+                    .size(height)
+                    .semantics { role = Role.Button }
             ) {
-                Icon(Icons.Filled.ArrowBack, contentDescription = "Prev")
+                Icon(Icons.Filled.ArrowBack, contentDescription = "Anterior")
             }
             Spacer(modifier = Modifier.width(4.dp))
         }
@@ -221,6 +242,18 @@ fun PagerIndicator(
             modifier = Modifier
                 .width(widthDots)
                 .height(height)
+                .semantics(mergeDescendants = true) {
+                    contentDescription = announcement
+                    collectionInfo = CollectionInfo(1, pageCount)
+                    collectionItemInfo = CollectionItemInfo(
+                        rowIndex = 0,
+                        rowSpan = 1,
+                        columnIndex = currentIndex,
+                        columnSpan = 1
+                    )
+                    liveRegion = LiveRegionMode.Polite
+                }
+                .focusable()
         ) {
             PagerIndicatorKernel(
                 pageCount = pageCount,
@@ -236,9 +269,11 @@ fun PagerIndicator(
             IconButton(
                 onClick = { if (currentIndex < pageCount - 1) onIndexChange(currentIndex + 1) },
                 enabled = currentIndex < pageCount - 1,
-                modifier = Modifier.size(height)
+                modifier = Modifier
+                    .size(height)
+                    .semantics { role = Role.Button }
             ) {
-                Icon(Icons.Filled.ArrowForward, contentDescription = "Next")
+                Icon(Icons.Filled.ArrowForward, contentDescription = "Próximo")
             }
         }
     }
