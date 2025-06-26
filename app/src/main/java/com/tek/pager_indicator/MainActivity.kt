@@ -6,9 +6,13 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Button
 import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,13 +46,29 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun PagerIndicatorContent() {
     var currentIndex by remember { mutableStateOf(0) }
-    val pageCount = 11
+    var pageCount by remember { mutableStateOf(5) }
 
-    PagerIndicator(
-        modifier = Modifier,
-        pageCount = pageCount,
-        currentIndex = currentIndex,
-        onIndexChange = { currentIndex = it }
-    )
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        PagerIndicator(
+            modifier = Modifier,
+            pageCount = pageCount,
+            currentIndex = currentIndex,
+            onIndexChange = { currentIndex = it }
+        )
+        
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        Button(
+            onClick = { 
+                // Update pageCount to a different value when button is clicked
+                pageCount = if (pageCount == 5) 10 else 5
+            },
+            modifier = Modifier.padding(8.dp)
+        ) {
+            Text(text = "Change Page Count (Current: $pageCount)")
+        }
+    }
 }
-
