@@ -44,10 +44,10 @@ internal fun PagerIndicatorKernel(
     dotStyle: DotStylePx,
     dotAnimations: DotAnimationSet = DotAnimationSet()
 ) {
-    var page by rememberSaveable {
-        mutableStateOf(currentIndex)
+    var page by rememberSaveable(pageCount) {
+        mutableStateOf(kotlin.math.min(currentIndex, pageCount - 1))
     }
-    var range by rememberSaveable {
+    var range by rememberSaveable(pageCount) {
         val start = when {
             pageCount <= dotStyle.visibleDotCount -> 0
             else -> {
@@ -65,10 +65,10 @@ internal fun PagerIndicatorKernel(
         )
     }
 
-    var prevPage by remember { mutableStateOf(currentIndex) }
-    var prevRange by remember { mutableStateOf(range) }
-    val enteringIndices = remember { mutableStateListOf<Int>() }
-    val leavingIndices = remember { mutableStateListOf<Int>() }
+    var prevPage by remember(pageCount) { mutableStateOf(kotlin.math.min(currentIndex, pageCount - 1)) }
+    var prevRange by remember(pageCount) { mutableStateOf(range) }
+    val enteringIndices = remember(pageCount) { mutableStateListOf<Int>() }
+    val leavingIndices = remember(pageCount) { mutableStateListOf<Int>() }
     var deselectedIndex by remember { mutableStateOf<Int?>(null) }
 
     fun updateRange(index: Int) {

@@ -188,7 +188,7 @@ internal fun rememberIndicatorController(
     startIndex: Int,
     startRange: IntRange
 ): IndicatorController {
-    return remember {
+    return remember(count, size, dotStyle, startIndex, startRange) {
         IndicatorController(count, size, dotStyle, startIndex, startRange)
     }
 }
